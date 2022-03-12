@@ -43,11 +43,11 @@ Df["Tweets"] = Tweets
 Df.index = Datas
 
 # Ler Arquivo existente
-Df_Antigo = pd.read_csv("Tweets.csv", sep=";", index_col="Unnamed: 0")
+Df_Antigo = pd.read_csv("Data\Tweets.csv", sep=";", index_col="Unnamed: 0")
 
 # Adicionar Novas Linhas
 
 Df = pd.concat([Df, Df_Antigo])
 
 # Exportar DataFrame para CSV.
-Df.to_csv("Tweets.csv", sep=";")
+Df.to_csv("Data\Tweets.csv", sep=";")
