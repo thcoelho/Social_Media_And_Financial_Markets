@@ -91,6 +91,38 @@ def Sentimento():
     Tweets["Sentimento"] = Sentiment
 
     # Salvar Dataframe com sentiments
-    Tweets.to_csv("Data\Sentimento_Agregado.csv")
+    Tweets.to_csv("Data\Sentimento_Agregado.csv", sep=";")
 
+def Juntar_Base():
+    
+    # Ler dados de sentimentos e precos
+    Precos = pd.read_csv("Data\Precos.csv", sep=";", index_col="Unnamed: 0")
+    Sentimentos = pd.read_csv("Data\Sentimento_Agregado.csv", sep=";")
+    
+    # Converter coluna de horário para datetime, para podermos manipular os valores a serem compatíveis com aqueles
+    # presentes no dataframe Precos, nos quais minutos e segundos são sempre 0
+    Sentimentos["Unnamed: 0"] = pd.to_datetime(Sentimentos["Unnamed: 0"])
+    
+    # Trocar minutos diferentes de  0 por 0
+    Sentimentos["Unnamed: 0"] = Sentimentos["Unnamed: 0"].mask(Sentimentos["Unnamed: 0"].dt.minute != 0, Sentimentos["Unnamed: 0"] \
+    + pd.offsets.DateOffset(minute=0))    
 
+    # Trocar segundos diferentes de 0 por 0
+    Sentimentos["Unnamed: 0"] = Sentimentos["Unnamed: 0"].mask(Sentimentos["Unnamed: 0"].dt.second != 0, Sentimentos["Unnamed: 0"] \
+    + pd.offsets.DateOffset(second=0))
+    
+    # Transformar coluna de datas em índice e ordená-la
+    Sentimentos.set_index("Unnamed: 0", inplace=True)
+    Sentimentos.sort_index(inplace=True)
+
+    # Transformar índice do dataframe de preços em DateTime, para merge funcionar
+    Precos.index = pd.to_datetime(Precos.index)
+
+    # Juntar ambos os DataFrames
+    Base_Completa = Sentimentos.merge(Precos, left_index=True, right_index=True)
+    
+    # Nomear Índice
+    Base_Completa.index.name = "Horario"
+
+    # Exportar para csv
+    Base_Completa.to_csv("Data\Base_Completa.csv", sep=";")    
