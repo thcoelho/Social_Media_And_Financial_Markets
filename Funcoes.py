@@ -70,6 +70,8 @@ def Coletar_Precos():
     # Obter preços do BTC-USD em intervalos de uma hora desde o primeiro (Somente Preço em que a hora fecha)
     Precos = yf.Ticker("BTC-USD").history(start=inicio, end=fim, interval="1h")["Close"]
 
+    # Precos["Retornos"] = Precos["Close"].pct_change()
+
     # Exportar Preços
     Precos.to_csv("Data\Precos.csv", sep=";")
 
