@@ -17,6 +17,8 @@ def Coletar_Tweets(day=dt.datetime.now().day-1):
         Tokens = f.readlines()
         f.close()
 
+    print("Token Adquirido")
+
     # Inicializar objeto Client para pesquisa de Tweets
     Cliente = tweepy.Client(
         bearer_token=Tokens[-1], access_token=Tokens[1], access_token_secret=Tokens[4])
@@ -37,8 +39,9 @@ def Coletar_Tweets(day=dt.datetime.now().day-1):
             Tweets.append(resultados[hora].data[i].text)
         dia = dia.replace(hour=hora)
 
-    # Criar DataFrame Dados
+    print("Tweets Processados")
 
+    # Criar DataFrame Dados
     Df = pd.DataFrame()
     Df["Tweets"] = Tweets
     Df.index = Datas
@@ -52,6 +55,7 @@ def Coletar_Tweets(day=dt.datetime.now().day-1):
 
     # Exportar DataFrame para CSV.
     Df.to_csv("Data\Tweets.csv", sep=";")
+    print("Dados exportados com Sucesso")
 
 def Coletar_Precos():
     #Coletar Arquivo de Dados
@@ -67,6 +71,8 @@ def Coletar_Precos():
     fim = fim[:10]
     fim
 
+    print("Horizonte temporal adquirido")
+
     # Obter preços do BTC-USD em intervalos de uma hora desde o primeiro (Somente Preço em que a hora fecha)
     Precos = yf.Ticker("BTC-USD").history(start=inicio, end=fim, interval="1h")["Close"]
 
@@ -74,6 +80,7 @@ def Coletar_Precos():
 
     # Exportar Preços
     Precos.to_csv("Data\Precos.csv", sep=";")
+    print("Dados exportados com sucesso")
 
 def Sentimento():
 
@@ -89,11 +96,14 @@ def Sentimento():
     for i in range(Tweets.shape[0]):
         Sentiment.append(VADER.polarity_scores(text=Tweets.iloc[i,0])["compound"])
 
+    print("Sentimentos adquiridos")
     # Criar Coluna de sentimento no dataframe principal
     Tweets["Sentimento"] = Sentiment
 
     # Salvar Dataframe com sentiments
     Tweets.to_csv("Data\Sentimento_Agregado.csv", sep=";")
+
+    print("Dados exportados com Sucesso")
 
 def Juntar_Base():
     
@@ -128,3 +138,5 @@ def Juntar_Base():
 
     # Exportar para csv
     Base_Completa.to_csv("Data\Base_Completa.csv", sep=";")    
+
+    print("Dados exportados com Sucesso")
